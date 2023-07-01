@@ -14,10 +14,10 @@ router.post("/", auth, async (req, res) => {
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
-  let decoded = decodeJWT(req.header("x-auth-token"));
+  let {userId} = decodeJWT(req.header("x-auth-token"));
   const {  itemId, comment } = req.body;
   let item = await Item.findById(itemId);
-  let user = await User.findById(decoded.payload?._id);
+  let user = await User.findById(userId);
   if (item) {
     let commentObject = {
       _id: user._id,

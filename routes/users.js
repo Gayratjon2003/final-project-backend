@@ -8,10 +8,9 @@ const admin = require("../middleware/admin");
 const {decodeJWT} = require("../utils/decodeJwt");
 
 router.get("/me", auth, async (req, res) => {
-  
-  let decoded = decodeJWT(req.header("x-auth-token"));
+  let {userId} = decodeJWT(req.header("x-auth-token"));
   try {
-    const user = await User.findById(decoded.payload?._id).select(
+    const user = await User.findById(userId).select(
       "-password"
     );
     if (user.status === "Blocked") {
@@ -24,9 +23,9 @@ router.get("/me", auth, async (req, res) => {
   }
 });
 router.get("/", [auth, admin], async (req, res) => {
-  let decoded = decodeJWT(req.header("x-auth-token"));
+  let {userId} = decodeJWT(req.header("x-auth-token"));
   try {
-    const user = await User.findById(decoded.payload?._id).select("status");
+    const user = await User.findById(userId).select("status");
     if (user.status === "Blocked") {
       return res.status(401).send("You're blocked");
     }

@@ -13,17 +13,17 @@ router.get("/latest", async (req, res) => {
   res.status(200).send(collections);
 });
 router.get("/all", auth, async (req, res) => {
-  let decoded = decodeJWT(req.header("x-auth-token"));
-  if (!decoded.payload?._id) {
+  let {userId} = decodeJWT(req.header("x-auth-token"));
+  if (!userId) {
     return res.status(400).send("Your token is old");
   }
-  const user = await User.findById(decoded.payload?._id);
+  const user = await User.findById(userId);
   if (user.isAdmin) {
     let collections = await Collection.find();
     return res.status(200).send(collections);
   } else {
     const collection = await Collection.find({
-      "addedBy._id": decoded.payload?._id,
+      "addedBy._id": userId,
     });
     return res.status(200).send(collection);
   }
@@ -42,14 +42,14 @@ router.post("/", auth, async (req, res) => {
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
-  let decoded = decodeJWT(req.header("x-auth-token"));
+  let {userId} = decodeJWT(req.header("x-auth-token"));
   let result = "";
   if (req.body.image?.length) {
     result = await cloudinary.uploader.upload(req.body.image, {
       folder: "collections",
     });
   }
-  const user = await User.findById(decoded.payload?._id);
+  const user = await User.findById(userId);
   const category = await Category.findById(req.body.categoryId);
 
   let collection = new Collection({
@@ -75,14 +75,14 @@ router.put("/:id", auth, async (req, res) => {
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
-  let decoded = decodeJWT(req.header("x-auth-token"));
+  let {userId} = decodeJWT(req.header("x-auth-token"));
   let result = "";
   if (req.body.image?.length) {
     result = await cloudinary.uploader.upload(req.body.image, {
       folder: "collections",
     });
   }
-  const user = await User.findById(decoded.payload?._id);
+  const user = await User.findById(userId);
   const category = await Category.findById(req.body.categoryId);
 
   const oldCollection = await Collection.findById(req.params.id);
@@ -107,11 +107,11 @@ router.put("/:id", auth, async (req, res) => {
 });
 
 router.delete("/:id", auth, async (req, res) => {
-  let decoded = decodeJWT(req.header("x-auth-token"));
-  if (!decoded.payload?._id) {
+  let {userId} = decodeJWT(req.header("x-auth-token"));
+  if (!userId) {
     return res.status(400).send("Your token is old");
   }
-  const user = await User.findById(decoded.payload?._id);
+  const user = await User.findById(userId);
   const collection = await Collection.findById(req.params.id);
   if (user._id.toString() === collection.addedBy._id || user.isAdmin) {
     const collection = await Collection.findByIdAndDelete(req.params.id);
