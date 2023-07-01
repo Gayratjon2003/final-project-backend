@@ -6,7 +6,7 @@ const admin = require("../middleware/admin");
 const cloudinary = require("../utils/cloudinary");
 const { User } = require("../models/user");
 const { Category } = require("../models/category");
-const decodeJWT = require("../utils/decodeJwt");
+const {decodeJWT} = require("../utils/decodeJwt");
 
 router.get("/latest", async (req, res) => {
   let collections = await Collection.find().sort({ volume: -1 }).limit(5);

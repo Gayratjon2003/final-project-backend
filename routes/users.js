@@ -5,7 +5,7 @@ const router = express.Router();
 const _ = require("lodash");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
-const decodeJWT = require("../utils/decodeJwt");
+const {decodeJWT} = require("../utils/decodeJwt");
 
 router.get("/me", auth, async (req, res) => {
   
