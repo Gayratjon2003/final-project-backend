@@ -1,5 +1,5 @@
 const { User } = require("../models/user");
-const  decodeJWT = require("../utils/decodeJwt");
+const  {decodeJWT} = require("../utils/decodeJwt");
 
 module.exports = async function admin(req, res, next) {
   let decoded = decodeJWT(req.header("x-auth-token"));

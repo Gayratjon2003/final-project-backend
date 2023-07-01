@@ -6,7 +6,7 @@ const { Category } = require("../models/category");
 const { Collection } = require("../models/collection");
 const { Item, validate } = require("../models/item");
 const cloudinary = require("../utils/cloudinary");
-const decodeJWT = require("../utils/decodeJwt");
+const {decodeJWT} = require("../utils/decodeJwt");
 
 router.get("/latest", async (req, res) => {
   let items = await Item.find().sort({ _id: -1 }).limit(3);

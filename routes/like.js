@@ -3,7 +3,7 @@ const router = express.Router();
 const auth = require("../middleware/auth");
 const { Item } = require("../models/item");
 const mongoose = require("mongoose");
-const decodeJWT = require("../utils/decodeJwt");
+const {decodeJWT} = require("../utils/decodeJwt");
 const {
   Types: { ObjectId },
 } = mongoose;

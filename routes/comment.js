@@ -7,7 +7,7 @@ const { Category } = require("../models/category");
 const { Collection } = require("../models/collection");
 const { Item } = require("../models/item");
 const Joi = require("joi");
-const decodeJWT = require("../utils/decodeJwt");
+const {decodeJWT} = require("../utils/decodeJwt");
 
 router.post("/", auth, async (req, res) => {
   const { error } = validate(req.body);
