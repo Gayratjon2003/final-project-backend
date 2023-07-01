@@ -8,8 +8,7 @@ const {
   Types: { ObjectId },
 } = mongoose;
 router.post("/", auth, async (req, res) => {
-  let decoded = decodeJWT(req.header("x-auth-token"));
-  const userId = decoded.payload?._id;
+  let {userId} = decodeJWT(req.header("x-auth-token"));
   const { itemId } = req.body;
   const validateObjectId = (id) =>
     ObjectId.isValid(id) && new ObjectId(id).toString() === id;

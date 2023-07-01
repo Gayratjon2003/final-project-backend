@@ -19,17 +19,17 @@ router.get("/tags", async (req, res) => {
   res.status(200).send([...new Set(tags)]);
 });
 router.get("/all", auth, async (req, res) => {
-  let decoded = decodeJWT(req.header("x-auth-token"));
-  if (!decoded.payload?._id) {
+  let {userId} = decodeJWT(req.header("x-auth-token"));
+  if (!userId) {
     return res.status(400).send("Your token is old");
   }
-  const user = await User.findById(decoded.payload._id);
+  const user = await User.findById(userId);
   if (user.isAdmin) {
     let items = await Item.find();
     return res.status(200).send(items);
   } else {
     const item = await Item.find({
-      "addedBy._id": decoded.payload?._id,
+      "addedBy._id": userId,
     });
     return res.status(200).send(item);
   }
@@ -66,8 +66,8 @@ router.post("/", auth, async (req, res) => {
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
-  let decoded = decodeJWT(req.header("x-auth-token"));
-  const user = await User.findById(decoded.payload?._id);
+  let {userId} = decodeJWT(req.header("x-auth-token"));
+  const user = await User.findById(userId);
   const category = await Category.findById(req.body.categoryId);
   let collection = await Collection.findById(req.body.collectionId);
   let result = "";
@@ -112,8 +112,8 @@ router.put("/:id", auth, async (req, res) => {
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
-  let decoded = decodeJWT(req.header("x-auth-token"));
-  const user = await User.findById(decoded.payload?._id);
+  let {userId} = decodeJWT(req.header("x-auth-token"));
+  const user = await User.findById(userId);
   const category = await Category.findById(req.body.categoryId);
   let collection = await Collection.findById(req.body.collectionId);
   let result = "";
@@ -161,11 +161,11 @@ router.put("/:id", auth, async (req, res) => {
 });
 
 router.delete("/:id", auth, async (req, res) => {
-  let decoded = decodeJWT(req.header("x-auth-token"));
-  if (!decoded.payload?._id) {
+  let {userId} = decodeJWT(req.header("x-auth-token"));
+  if (!userId) {
     return res.status(400).send("Your token is old");
   }
-  const user = await User.findById(decoded.payload?._id);
+  const user = await User.findById(userId);
   const item = await Item.findById(req.params.id);
   const collectionId = item.collections._id;
   if (user._id.toString() === item.addedBy._id || user.isAdmin) {
