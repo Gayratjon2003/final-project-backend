@@ -6,14 +6,14 @@ const admin = require("../middleware/admin");
 const cloudinary = require("../utils/cloudinary");
 const { User } = require("../models/user");
 const { Category } = require("../models/category");
-const {decodeJWT} = require("../utils/decodeJwt");
+const { decodeJWT } = require("../utils/decodeJwt");
 
 router.get("/latest", async (req, res) => {
   let collections = await Collection.find().sort({ volume: -1 }).limit(5);
   res.status(200).send(collections);
 });
 router.get("/all", auth, async (req, res) => {
-  let {userId} = decodeJWT(req.header("x-auth-token"));
+  let { userId } = decodeJWT(req.header("x-auth-token"));
   if (!userId) {
     return res.status(400).send("Your token is old");
   }
@@ -42,7 +42,7 @@ router.post("/", auth, async (req, res) => {
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
-  let {userId} = decodeJWT(req.header("x-auth-token"));
+  let { userId } = decodeJWT(req.header("x-auth-token"));
   let result = "";
   if (req.body.image?.length) {
     result = await cloudinary.uploader.upload(req.body.image, {
@@ -51,7 +51,6 @@ router.post("/", auth, async (req, res) => {
   }
   const user = await User.findById(userId);
   const category = await Category.findById(req.body.categoryId);
-
   let collection = new Collection({
     name: req.body.name,
     addedBy: {
@@ -66,6 +65,7 @@ router.post("/", auth, async (req, res) => {
     publishedAt: new Date(),
     description: req.body.description,
     category: category,
+    fields: req.body.fields,
   });
   collection = await collection.save();
   res.status(201).send(collection);
@@ -75,7 +75,7 @@ router.put("/:id", auth, async (req, res) => {
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
-  let {userId} = decodeJWT(req.header("x-auth-token"));
+  let { userId } = decodeJWT(req.header("x-auth-token"));
   let result = "";
   if (req.body.image?.length) {
     result = await cloudinary.uploader.upload(req.body.image, {
@@ -97,6 +97,7 @@ router.put("/:id", auth, async (req, res) => {
         },
         description: req.body.description,
         category: category,
+        fields: req.body?.fields,
       },
       { new: true }
     );
@@ -107,7 +108,7 @@ router.put("/:id", auth, async (req, res) => {
 });
 
 router.delete("/:id", auth, async (req, res) => {
-  let {userId} = decodeJWT(req.header("x-auth-token"));
+  let { userId } = decodeJWT(req.header("x-auth-token"));
   if (!userId) {
     return res.status(400).send("Your token is old");
   }

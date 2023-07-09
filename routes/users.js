@@ -36,6 +36,19 @@ router.get("/", [auth, admin], async (req, res) => {
   const users = await User.find().select("-password");
   res.send(users);
 });
+router.get("/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password");
+    if (user) {
+      return res.status(200).send(user);
+    }
+  } catch (err) {
+    return res.status(400).send("User not found");
+  }
+
+  const users = await User.find().select("-password");
+  res.send(users);
+});
 
 router.post("/", async (req, res) => {
   const { error } = validate(req.body);

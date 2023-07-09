@@ -10,6 +10,10 @@ const itemSchema = new mongoose.Schema({
     minlength: 2,
     maxlength: 50,
   },
+  author: {
+    type: String,
+    required: true,
+  },
   collections: {
     _id: {
       type: String,
@@ -19,10 +23,10 @@ const itemSchema = new mongoose.Schema({
       type: String,
       required: true,
     },
-  },
-  category: {
-    type: categorySchema,
-    required: true,
+    addedBy: {
+      type: String,
+      required: true,
+    },
   },
   addedBy: {
     _id: {
@@ -34,20 +38,12 @@ const itemSchema = new mongoose.Schema({
       required: true,
     },
   },
-  author: {
-    type: String,
-    required: true,
-  },
   publishedAt: {
     type: String,
     required: true,
   },
   tags: {
     type: Array,
-    required: true,
-  },
-  description: {
-    type: String,
     required: true,
   },
   likes: {
@@ -90,6 +86,16 @@ const itemSchema = new mongoose.Schema({
       },
     },
   ],
+  customFields: {
+    fields: {
+      type: Array,
+      required: false
+    },
+    values: {
+      type: Array,
+      required: false
+    },
+  }
 });
 
 const Item = mongoose.model("Item", itemSchema);
@@ -97,11 +103,10 @@ const Item = mongoose.model("Item", itemSchema);
 function validateItem(item) {
   const schema = {
     name: Joi.string().min(1).max(50).required(),
-    author: Joi.string().min(1).max(255).required(),
-    categoryId: Joi.string().required(),
+    author: Joi.string().min(2).max(50).required(),
     collectionId: Joi.string().required(),
     tags: Joi.array().items(Joi.string()),
-    description: Joi.string().min(1).max(4096).required(),
+    values: Joi.array().items(Joi.object()),
     image: Joi.any(),
     comments: Joi.array(),
   };
