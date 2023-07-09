@@ -8,6 +8,7 @@ const collectionSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  
   addedBy: {
     _id: {
       type: String,
@@ -44,6 +45,11 @@ const collectionSchema = new mongoose.Schema({
     type: categorySchema,
     required: true,
   },
+  fields: {
+    type: Array,
+    required: false
+  },
+  
 });
 const Collection = mongoose.model("Collection", collectionSchema);
 function validateCollection(collection) {
@@ -51,6 +57,7 @@ function validateCollection(collection) {
     name: Joi.string().min(2).max(50).required(),
     description: Joi.string().min(1).max(4096).required(),
     categoryId: Joi.string().required(),
+    fields: Joi.array().items(Joi.object()),
     image: Joi.any(),
   };
 
